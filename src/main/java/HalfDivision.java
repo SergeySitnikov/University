@@ -4,14 +4,12 @@ import java.util.function.DoubleUnaryOperator;
 
 public class HalfDivision implements Solver {
     private DoubleUnaryOperator function;
-    private DoubleUnaryOperator derivative;
     private double[] xOfDerivativeEqualsZero;
     private List<X> answer;
 
 
-    public HalfDivision(DoubleUnaryOperator function, DoubleUnaryOperator derivative, double[] xOfDerivativeEqualsZero) {
+    public HalfDivision(DoubleUnaryOperator function,  double[] xOfDerivativeEqualsZero) {
         this.function = function;
-        this.derivative = derivative;
         this.xOfDerivativeEqualsZero = xOfDerivativeEqualsZero;
         answer = new ArrayList<>();
     }
@@ -26,11 +24,6 @@ public class HalfDivision implements Solver {
         }
 
     }
-
-    private void goldenSection() {
-
-    }
-
 
 
     private void dividedByHalf(X x) {
@@ -49,12 +42,12 @@ public class HalfDivision implements Solver {
     private void narrowBorders() {
         for (X x : answer) {
             if (x.rightBorder - x.leftBorder > 1) {
-               if (getSignOfFunction(x.rightBorder - 1) == getSignOfFunction(x.rightBorder)) {
-                   x.rightBorder--;
-               }
-               if (getSignOfFunction(x.leftBorder + 1) == getSignOfFunction(x.leftBorder)) {
-                   x.leftBorder++;
-               }
+                if (getSignOfFunction(x.rightBorder - 1) == getSignOfFunction(x.rightBorder)) {
+                    x.rightBorder--;
+                }
+                if (getSignOfFunction(x.leftBorder + 1) == getSignOfFunction(x.leftBorder)) {
+                    x.leftBorder++;
+                }
             }
         }
     }
@@ -87,7 +80,6 @@ public class HalfDivision implements Solver {
     }
 
 
-
     private boolean[] isCorrectBorders() {
         boolean[] isCorrect = {true, true};
         if (getSignOfFunction(xOfDerivativeEqualsZero[0])) {
@@ -110,11 +102,7 @@ public class HalfDivision implements Solver {
                 }
             }
         }
-//        for (int i = 1; i < xOfDerivativeEqualsZero.length - 1; i++) {
-//            if (getSignOfFunction(i) != getSignOfFunction(i - 1)) {
-//
-//            }
-//        }
+
         return isCorrect;
     }
 
@@ -124,7 +112,12 @@ public class HalfDivision implements Solver {
 
     private boolean getSignOfDerivative(double x, double delta, boolean isRight) {
         if (!isRight) delta = -delta;
-        return derivative.applyAsDouble(x + delta) > 0;
+        return getDerivative(x + delta) > 0;
+    }
+
+    private double getDerivative(double x) {
+        double h = 0.0000001;
+        return (function.applyAsDouble(x + h) - function.applyAsDouble(x)) / h;
     }
 
     private class X {
